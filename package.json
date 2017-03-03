@@ -1,0 +1,54 @@
+{
+  "name": "gulp-sass-browserify-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:dev": "gulp",
+    "build:dev:sass": "gulp sass",
+    "build:dev:js": "gulp js",
+    "build:prod": "gulp --env=production",
+    "build:prod:sass": "gulp sass --env=production",
+    "build:prod:js": "gulp js --env=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kunihiko-sugiura/gulp-sass-browserify-boilerplate.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kunihiko-sugiura/gulp-sass-browserify-boilerplate/issues"
+  },
+  "homepage": "https://github.com/kunihiko-sugiura/gulp-sass-browserify-boilerplate#readme",
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.1.0",
+    "browserify-shim": "^3.8.13",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-clean-css": "^3.0.3",
+    "gulp-if": "^2.0.2",
+    "gulp-imagemin": "^3.1.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-notify": "^3.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^2.0.1",
+    "imagemin-pngquant": "^5.0.0",
+    "minimist": "^1.2.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "browserify": {
+    "transform": [
+      "babelify",
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "jquery": "global:$"
+  }
+}

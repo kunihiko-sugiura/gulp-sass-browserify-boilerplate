@@ -1,17 +1,18 @@
-var gulp            = require("gulp");
-var sass            = require("gulp-sass");
-var autoprefixer    = require("gulp-autoprefixer");
-var uglify          = require("gulp-uglify");
-var plumber         = require("gulp-plumber");
-var notify          = require("gulp-notify");
-var cleanCSS        = require('gulp-clean-css');
-var minimist        = require('minimist');
-var gulpif          = require('gulp-if');
-var browserify      = require('browserify');
-var source          = require('vinyl-source-stream');
-var buffer          = require('vinyl-buffer');
-var imagemin        = require('gulp-imagemin');
-var pngquant        = require('imagemin-pngquant');
+const gulp            = require("gulp");
+const sass            = require("gulp-sass");
+const autoprefixer    = require("gulp-autoprefixer");
+const uglify          = require("gulp-uglify");
+const plumber         = require("gulp-plumber");
+const notify          = require("gulp-notify");
+const minimist        = require('minimist');
+const gulpif          = require('gulp-if');
+const minifyCss       = require('gulp-minify-css');
+const browserify      = require('browserify');
+const source          = require('vinyl-source-stream');
+const buffer          = require('vinyl-buffer');
+const imagemin        = require('gulp-imagemin');
+const pngquant        = require('imagemin-pngquant');
+const imageminJpegtran = require('imagemin-jpegtran');
 
 // ** parse args
 var knownOptions = {
@@ -26,11 +27,11 @@ var isProduction = (options.env == 'production');
 console.log('[NODE_ENV]', process.env.NODE_ENV);
 
 gulp.task("sass", function () {
-    gulp.src("src/sass/**/*.scss")
+    gulp.src(["src/sass/**/*.scss", "!src/sass/include/*"])
         .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
         .pipe(sass({}))
-        .pipe(autoprefixer())
-        .pipe(minifyCss())
+        .pipe(gulpif( isProduction , autoprefixer() ))
+        .pipe(gulpif( isProduction , minifyCss() ))
         .pipe(gulp.dest("./css"));
 });
 
@@ -41,21 +42,25 @@ gulp.task("js", function () {
         .pipe(gulp.dest("./js"));
 });
 
-gulp.task("png", function () {
-    gulp.src(["src/img/**/*.png"])
+gulp.task("img", function () {
+    gulp.src(["src/img/**/*.{png,gif,jpg,svg}"])
         .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
         .pipe(imagemin({
-            use: [pngquant({
-                quality: '60-80',
-                speed: 1
-            })]
+            progressive: true,
+            svgoPlugins: [
+                { removeViewBox: false },
+                { cleanupIDs: false }
+            ],
+            use: [
+                imageminJpegtran({
+                    progressive: true
+                }),
+                pngquant({
+                    quality: '60-80',
+                    speed: 1
+                })
+            ]
         }))
-        .pipe(gulp.dest("./img"));
-});
-gulp.task("img", function () {
-    gulp.src(["src/img/**/*.jpg"])
-        .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
-        .pipe(imagemin())
         .pipe(gulp.dest("./img"));
 });
 
@@ -79,7 +84,6 @@ gulp.task('js-common-bundle', function() {
 gulp.task("default", function () {
     gulp.watch(["src/js/*.js"], ["js"]);
     gulp.watch("src/js/bundle/*.js", ["js"]);
-    gulp.watch("src/sass/**/*.scss", ["sass"]);
-    gulp.watch("src/img/**/*.png", ["png"]);
-    gulp.watch(["src/img/**/*.*", "!src/img/**/*.png"], ["img"]);
+    gulp.watch(["src/sass/**/*.scss", "!src/sass/include/*"], ["sass"]);
+    gulp.watch(["src/img/**/*.{png,gif,jpg,svg}"], ["img"]);
 });

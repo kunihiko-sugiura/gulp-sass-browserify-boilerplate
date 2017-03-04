@@ -1,0 +1,12 @@
+@import "include/common";
+
+.top {
+  h1 {
+    color: $main-color;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+

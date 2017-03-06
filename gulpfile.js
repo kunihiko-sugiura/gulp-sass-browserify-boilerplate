@@ -68,14 +68,17 @@ gulp.task('js-common-bundle', function() {
     return browserify({
         debug : !isProduction
     })
-    // .require('jquery')
+    .transform("babelify")
+    // ** ここで必要な外部ライブラリや自作ライブラリをrequireする
+    // .require('vue')
     // .require('./js/vue-plugin/vue-input-helper.js', {expose: 'VueInputHelper'})
-    .bundle().pipe(source('common-bundle.js'))
+    .bundle()
+    .pipe(source('common-bundle.js'))
     .pipe(buffer())
     .pipe(gulpif( isProduction , uglify() ))
-    .pipe(gulp.dest('./js/bundle/'));
+    .pipe(gulp.dest('./js'));
 
-    // Notice:ただ単にpackage.jsonでも良し。
+    // Notice:jsのbuildだけなら、ただ単にpackage.jsonの設定でも良し。
     // "scripts": {
     //     "build:js": "browserify -r ./src/common.js:common -o ./dest/common.js"
     // },
@@ -83,7 +86,7 @@ gulp.task('js-common-bundle', function() {
 
 gulp.task("default", function () {
     gulp.watch(["src/js/*.js"], ["js"]);
-    gulp.watch("src/js/bundle/*.js", ["js"]);
+    gulp.watch("src/js/common-bundle/*.js", ["js-common-bundle"]);
     gulp.watch(["src/sass/**/*.scss", "!src/sass/include/*"], ["sass"]);
     gulp.watch(["src/img/**/*.{png,gif,jpg,svg}"], ["img"]);
 });
